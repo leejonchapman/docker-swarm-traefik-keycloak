@@ -1,0 +1,37 @@
+version: '3.5'
+services:
+  software:
+    image: jboss/keycloak:latest
+    networks:
+      - internal
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: 
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_SCHEMA: public
+      DB_PASSWORD: 
+      KEYCLOAK_USER: 
+      KEYCLOAK_PASSWORD:
+      # Issues with connecting to DB in v8 - this means unencypted to DB!         
+      JDBC_PARAMS: 'useSSL=false'
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.backend: "keycloak"
+        traefik.docker.network: "internal"
+        traefik.frontend.rule: "Host:keycloak.leejonchapman.com"
+        traefik.web.port: "8080"
+        traefik.frontend.headers.SSLRedirect: "true"
+        traefik.frontend.headers.SSLHost: "keycloak.leejonchapman.com"
+      placement:
+        constraints:
+          - node.role == worker
+      mode: global
+      restart_policy:
+        condition: any
+        max_attempts: 3
+networks:
+ internal:
+   name: internal
+   external: true
