@@ -13,8 +13,9 @@ services:
       DB_PASSWORD: 
       KEYCLOAK_USER: 
       KEYCLOAK_PASSWORD:
-      # Issues with connecting to DB in v8 - this means unencypted to DB!         
-      JDBC_PARAMS: 'useSSL=false'
+      # Allows reversing proxying
+      PROXY_ADDRESS_FORWARDING: 'true'
+            
     deploy:
       labels:
         traefik.enable: "true"
@@ -22,8 +23,6 @@ services:
         traefik.docker.network: "internal"
         traefik.frontend.rule: "Host:keycloak.leejonchapman.com"
         traefik.web.port: "8080"
-        traefik.frontend.headers.SSLRedirect: "true"
-        traefik.frontend.headers.SSLHost: "keycloak.leejonchapman.com"
       placement:
         constraints:
           - node.role == worker
